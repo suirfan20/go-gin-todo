@@ -1,0 +1,52 @@
+name: CI (Simulated Deploy)
+
+on:
+  pull_request:
+  push:
+    branches: [ main, develop, feat/** ]
+
+jobs:
+  build-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Install golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.59.1
+          args: --timeout=3m
+
+      - name: Run tests
+        run: go test ./...
+
+  deploy-simulated:
+    name: 🚀 Simulated Deploy (No real server)
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Simulate deploy step
+        run: |
+          echo "✅ Build and tests passed!"
+          echo "🚀 Simulating deploy process..."
+          echo "Pushing Docker image (simulated)..."
+          sleep 2
+          echo "Deploying to server (simulated)..."
+          sleep 2
+          echo "Deployment complete (simulation only)."
