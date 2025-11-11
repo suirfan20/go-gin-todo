@@ -1,0 +1,6 @@
+go run ./cmd/server
+# tab lain:
+curl http://localhost:8080/healthz
+
+
+
