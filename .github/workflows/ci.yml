@@ -15,7 +15,9 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          # go-version: '1.23'
+          go-version-file: 'go.mod'
+
 
       - name: Cache Go modules
         uses: actions/cache@v4
@@ -36,9 +38,37 @@ jobs:
       - name: Run tests
         run: go test ./...
 
+  
+  build-docker:
+    name: Build Docker Image
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker Image
+        run: docker build -t myapp:${{github.sha}} .
+
+  # deploy:
+  #   name: Deploy to Server
+  #   needs: build-docker
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main'
+  #   steps:
+  #     - name: Deploy via SSH
+  #       uses: appleboy/ssh-action@v1.0.3
+  #       with:
+  #         host: ${{ secrets.SERVER_HOST }}
+  #         username: ${{ secrets.SERVER_USER }}
+  #         key: ${{ secrets.SSH_PRIVATE_KEY }}
+  #         script: |
+  #           cd /app/myapp
+  #           docker pull myapp:${{ github.sha }}
+  #           docker compose down
+  #           docker compose up -d
+
   deploy-simulated:
     name: 🚀 Simulated Deploy (No real server)
-    needs: build-test
+    needs: build-docker
     runs-on: ubuntu-latest
     steps:
       - name: Simulate deploy step

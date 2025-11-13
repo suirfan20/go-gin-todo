@@ -4,3 +4,32 @@ curl http://localhost:8080/healthz
 
 
 
+go mod tidy
+go run ./cmd/server
+
+
+
+git add .
+git commit -m "test: add basic handler tests"
+git push origin main
+
+
+
+golangci-lint run
+go test ./...
+
+
+
+
+
+docker compose up --build
+
+curl.exe http://localhost:8081/healthz
+
+
+
+
+
+
+
+
